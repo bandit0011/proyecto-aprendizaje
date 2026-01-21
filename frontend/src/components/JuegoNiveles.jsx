@@ -1,9 +1,15 @@
 import { useState, useEffect, useRef } from 'react';
+import Modal from './Modal';
 
 function JuegoNiveles({ nivelInicial, usuarioId, alSalir }) {
   const [nivelActivo, setNivelActivo] = useState(nivelInicial || 1);
   const [datosJuego, setDatosJuego] = useState({});
   const [mensaje, setMensaje] = useState('');
+  const [modalInfo, setModalInfo] = useState({ visible: false, mensaje: '', tipo: '' });
+  const cerrarModal = () => {
+    setModalInfo({ ...modalInfo, visible: false });
+    // Si necesitas que pase algo al cerrar (ej. cambiar nivel), ponlo aquí
+};
   
   // PUNTUACIÓN
   const [puntos, setPuntos] = useState(0);
@@ -126,7 +132,7 @@ function JuegoNiveles({ nivelInicial, usuarioId, alSalir }) {
 
       if (nuevosPuntos >= metaPuntos) {
         await guardarProgreso(nuevosPuntos, true); 
-        alert(`¡FELICIDADES! 🎉\nCompletaste el ${config[nivelActivo].titulo}\nRegresando al mapa...`);
+        setModalInfo({ visible: true, mensaje: `¡FELICIDADES! 🎉\nCompletaste el ${config[nivelActivo].titulo}\nRegresando al mapa...`, tipo: 'acierto' });
         alSalir(nuevosPuntos); 
       } else {
         guardarProgreso(nuevosPuntos, false); 
@@ -214,6 +220,13 @@ function JuegoNiveles({ nivelInicial, usuarioId, alSalir }) {
           <p>Cargando opciones...</p>
         )}
       </div>
+      {modalInfo.visible && (
+      <Modal 
+        mensaje={modalInfo.mensaje} 
+        tipo={modalInfo.tipo} 
+        onClose={cerrarModal} 
+      />
+    )}
     </div>
   );
 }

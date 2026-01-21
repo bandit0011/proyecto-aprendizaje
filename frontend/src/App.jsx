@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import JuegoNiveles from './components/JuegoNiveles';
 import TablaReportes from './components/TablaReportes';
+import Modal from './components/Modal';
 
 function App() {
   const [vista, setVista] = useState('seleccion'); 
@@ -43,9 +44,9 @@ function App() {
       });
       const data = await respuesta.json();
       if (respuesta.ok) {
-        alert('Creado con éxito'); setVista('dashboard');
-      } else { alert(data.mensaje); }
-    } catch (e) { alert('Error de conexión'); }
+        setModalInfo({ visible: true, mensaje: 'Creado con éxito', tipo: 'acierto' }); setVista('dashboard');
+      } else { setModalInfo({ visible: true, mensaje: data.mensaje, tipo: 'error' }); }
+    } catch (e) { setModalInfo({ visible: true, mensaje: 'Error de conexión', tipo: 'error' }); }
   };
 
   const alSalirJuego = (puntosObtenidos) => {
@@ -190,6 +191,14 @@ function App() {
         
         <br/>
         <button onClick={() => {setVista('seleccion'); setUsuario('');}} className="btn-volver">Cerrar Sesión 🔒</button>
+        {modalInfo.visible && (
+          <Modal 
+          mensaje={modalInfo.mensaje} 
+          tipo={modalInfo.tipo} 
+          onClose={cerrarModal} 
+          />
+          )
+        }
       </div>
     );
   }
